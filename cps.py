@@ -29,6 +29,7 @@ print("List of commands: (R)ead(Ca)rd, (Ex)it ")
 while(True):
     cmd = raw_input("Please enter a command: ")
     if(cmd.lower() == 'rca' or cmd.lower == ("ReadCard")):
+        purAmnt = raw_input("Please enter the purchase amount:")
         camera.start_preview()
         card_id = readRFID()
         print("card_id=", card_id)
@@ -47,13 +48,18 @@ while(True):
             'path': (None, '/home/pi/Pictures'),
             'origFileName': (None, fileName),
             'cardId': (None,card_id),
-            'storeId': (None,store_id)
+            'storeId': (None,store_id),
+            'purAmnt': (None, purAmnt)
         }
 
         response = requests.post('http://etu-web2.ut-capitole.fr:3013/aws/transaction', files=multipart_form_data)
+        rJson = response.json()
 
-        print(response.content)
+        if(rJson.match == "success"):
+            print("Your transaction was successful")
+        elif(rJson.match == "fail"):
+            print("Authentication failed.")
+
         card_id = ""
-
     elif(cmd.lower() == 'ex' or cmd.lower() == 'exit'):
         break
